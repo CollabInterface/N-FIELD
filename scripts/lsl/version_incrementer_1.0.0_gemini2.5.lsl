@@ -1,7 +1,7 @@
 // SCRIPT METADATA & AI INSTRUCTIONS
 // ---------------------------------
 // Purpose: Displays the script version and the AI model that last modified it
-//          as hovertext above the prim containing this script.
+//          as hovertext above the prim containing this script. Could be usable as a snippet for the user.
 //
 // AI Update Instructions:
 // 1. Read the request specifying the type of change (e.g., bug fix, new feature).
