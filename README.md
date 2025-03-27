@@ -13,7 +13,7 @@ N-FIELD is a repository that contains a diverse collection of games and applicat
 ## Accessing the Resources
 
 You can easily access the various webpages related to this project without downloading them by visiting the following link:
-[N-FIELD Webpages](https://collabinterface.github.io/N-FIELD/index.html)
+[N-FIELD Webpages](https://collabinterface.github.io/N-FIELD/docs/index.html)
 
 ## Getting Started
 
