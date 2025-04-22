@@ -1,0 +1,553 @@
+/* --- Cyberpunk Theme Variables --- */
+:root {
+    /* Color Palette */
+    --bg-color: #0a0a1a; /* Very dark blue/black */
+    --primary-neon: #00ffff; /* Cyan */
+    --secondary-neon: #ff00ff; /* Magenta */
+    --tertiary-neon: #39ff14; /* Lime Green */
+    --text-color: #e0e0e0; /* Light grey */
+    --border-color: #444; /* Dark grey for subtle borders */
+    --border-neon: var(--primary-neon); /* Neon border color */
+    --hover-bg: #2a2a3e; /* Dark purple/blue for hover states */
+    --active-bg: #3a3a4e; /* Slightly lighter purple/blue for active states */
+
+    /* Typography */
+    --font-heading: 'Orbitron', sans-serif; /* Futuristic heading font */
+    --font-body: 'Fira Code', monospace; /* Monospaced font for code/grid */
+
+    /* Grid Layout Variables (Set dynamically by JS) */
+    --map-cols: 32; /* Default value, updated by JS */
+    --map-rows: 32; /* Default value, updated by JS */
+    --cell-size: 20px; /* Default value, updated by JS */
+}
+
+/* --- Base Styles --- */
+* {
+    box-sizing: border-box; /* Include padding and border in element's total width/height */
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%; /* Full height */
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-body);
+    font-size: 14px;
+    overflow: hidden; /* Prevent body scrollbars, rely on internal scrolling */
+}
+
+/* --- Typography Styles --- */
+h1, h2, h3 {
+    font-family: var(--font-heading);
+    color: var(--primary-neon);
+    text-shadow: 0 0 5px var(--primary-neon), 0 0 10px var(--primary-neon); /* Neon glow effect */
+    margin-bottom: 0.8em;
+}
+
+h2 { /* Section headings */
+    font-size: 1.2em;
+    border-bottom: 1px solid var(--border-neon);
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    color: var(--secondary-neon); /* Use secondary neon for section titles */
+    text-shadow: 0 0 5px var(--secondary-neon), 0 0 10px var(--secondary-neon);
+    border-bottom-color: var(--secondary-neon);
+}
+
+/* --- Form Element Styles --- */
+button, input[type="file"] {
+    font-family: var(--font-body);
+    background-color: var(--bg-color);
+    color: var(--primary-neon);
+    border: 1px solid var(--border-neon);
+    padding: 8px 12px;
+    margin: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 3px var(--border-neon); /* Subtle neon glow */
+}
+
+button:hover, input[type="file"]:hover {
+    background-color: var(--hover-bg);
+    box-shadow: 0 0 8px var(--border-neon), 0 0 15px var(--border-neon); /* Enhanced glow on hover */
+    color: white;
+}
+
+/* Style the button part of the file input */
+input[type="file"]::-webkit-file-upload-button {
+    background: var(--bg-color);
+    border: none;
+    color: var(--primary-neon);
+    padding: 5px 8px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+input[type="file"]::-webkit-file-upload-button:hover {
+     background: var(--hover-bg);
+}
+
+label {
+    margin-right: 5px;
+    color: var(--text-color);
+}
+
+input[type="number"],
+input[type="text"],
+textarea {
+    background-color: rgba(0,0,0,0.3); /* Semi-transparent dark background */
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    font-family: var(--font-body);
+    padding: 6px 8px;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+textarea:focus {
+     border-color: var(--secondary-neon); /* Highlight focus with secondary neon */
+     outline: none; /* Remove default browser outline */
+     box-shadow: 0 0 5px var(--secondary-neon); /* Add neon glow on focus */
+}
+
+textarea {
+    resize: vertical; /* Allow vertical resizing */
+    width: 100%; /* Default to full width */
+}
+
+/* Preformatted text (for JSON display) */
+pre {
+    background-color: rgba(0,0,0,0.3);
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    font-family: var(--font-body);
+    font-size: 0.9em;
+    white-space: pre-wrap; /* Allow wrapping */
+    word-wrap: break-word; /* Break long words */
+    max-height: 150px; /* Limit height */
+    overflow-y: auto; /* Add scrollbar if content exceeds max height */
+    color: var(--tertiary-neon); /* Use tertiary neon for JSON text */
+}
+
+/* --- Layout Styles --- */
+.container {
+    display: flex;
+    flex-direction: column; /* Stack header, main, footer vertically */
+    height: 100vh; /* Full viewport height */
+    padding: 15px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 15px;
+    flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+main {
+    display: flex; /* Arrange controls and map side-by-side */
+    flex-grow: 1; /* Allow main area to fill remaining space */
+    overflow: hidden; /* Prevent content from overflowing main */
+    gap: 15px; /* Space between controls and map area */
+}
+
+/* Left panel for controls */
+.controls-area {
+    width: 350px; /* Fixed width */
+    display: flex;
+    flex-direction: column; /* Stack control sections vertically */
+    gap: 15px; /* Space between control sections */
+    overflow-y: auto; /* Allow scrolling if controls exceed height */
+    flex-shrink: 0; /* Prevent controls area from shrinking */
+    border-right: 1px solid var(--border-neon); /* Neon divider */
+    padding-right: 15px; /* Space for divider and scrollbar */
+}
+
+/* Individual sections within the controls area */
+.control-section {
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    background-color: rgba(10, 10, 30, 0.5); /* Slightly different background */
+    box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.1); /* Subtle inner glow */
+}
+
+/* Right panel for the map */
+.map-area {
+    flex-grow: 1; /* Allow map area to fill remaining horizontal space */
+    display: flex;
+    flex-direction: column; /* Stack map grid and coords display vertically */
+    justify-content: center; /* Center map vertically */
+    align-items: center; /* Center map horizontally */
+    overflow: auto; /* Allow scrolling if map grid is too large */
+    padding: 10px;
+    background-color: rgba(0,0,0,0.2); /* Slightly darker background */
+    border: 1px solid var(--border-color);
+}
+
+/* The map grid itself */
+#map-grid {
+    display: grid;
+    /* Grid columns and rows set by JS using CSS variables */
+    grid-template-columns: repeat(var(--map-cols), var(--cell-size));
+    grid-template-rows: repeat(var(--map-rows), var(--cell-size));
+    border: 1px solid var(--primary-neon); /* Neon border around grid */
+    box-shadow: 0 0 10px var(--primary-neon); /* Neon glow */
+    margin-bottom: 10px; /* Space between map and coords display */
+    cursor: crosshair; /* Indicate interaction */
+    /* Prevent selecting text within the grid */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Individual cells within the map grid */
+.map-cell {
+    /* Size set by JS using CSS variable */
+    width: var(--cell-size);
+    height: var(--cell-size);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(0, 255, 255, 0.15); /* Faint cyan grid lines */
+    font-family: var(--font-body);
+    /* Adjust font size relative to cell size */
+    font-size: calc(var(--cell-size) * 0.7);
+    line-height: 1; /* Prevent extra spacing */
+    color: var(--text-color);
+    transition: background-color 0.1s ease, border-color 0.1s ease; /* Smooth hover transition */
+    overflow: hidden; /* Hide overflowing characters */
+    text-align: center;
+}
+
+.map-cell:hover {
+    background-color: rgba(0, 255, 255, 0.2); /* Neon cyan hover background */
+    border-color: var(--primary-neon); /* Highlight border on hover */
+}
+
+/* Style for cells that have associated data (via modal) */
+.map-cell.has-data {
+    /* Add a subtle indicator, e.g., inner shadow or border */
+    box-shadow: inset 0 0 3px var(--tertiary-neon); /* Lime green inner glow */
+    /* Alternative: border-bottom: 2px solid var(--tertiary-neon); */
+}
+
+/* Footer area */
+footer {
+    text-align: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-neon); /* Neon top border */
+    flex-shrink: 0; /* Prevent footer from shrinking */
+    color: var(--secondary-neon); /* Use secondary neon for status prefix */
+}
+
+/* --- Specific Controls Styling --- */
+
+/* Layer Management Controls */
+#layer-selector label,
+#layer-visibility label {
+    display: block; /* Stack layer controls vertically */
+    margin-bottom: 5px;
+    cursor: pointer;
+    color: var(--text-color);
+}
+#layer-selector input[type="radio"],
+#layer-visibility input[type="checkbox"] {
+   margin-right: 8px;
+   accent-color: var(--secondary-neon); /* Style radio/checkbox color */
+   cursor: pointer;
+   vertical-align: middle; /* Align checkbox/radio with text */
+}
+
+/* Symbol Palette */
+#palette-container {
+    display: flex;
+    flex-wrap: wrap; /* Allow symbols to wrap to next line */
+    gap: 5px; /* Space between symbols */
+    margin-bottom: 10px;
+}
+
+.palette-symbol {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    line-height: 25px; /* Center text vertically */
+    text-align: center;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: var(--font-body);
+    user-select: none; /* Prevent text selection */
+}
+
+.palette-symbol:hover {
+    border-color: var(--primary-neon);
+    color: var(--primary-neon);
+    background-color: var(--hover-bg);
+}
+
+.palette-symbol.selected { /* Style for the currently selected symbol */
+    border-color: var(--secondary-neon);
+    background-color: var(--active-bg);
+    color: var(--secondary-neon);
+    box-shadow: 0 0 5px var(--secondary-neon); /* Neon glow for selected */
+}
+
+/* Display showing the selected symbol next to "Selected Brush:" text */
+.selected-symbol-display {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    background-color: var(--active-bg);
+    border: 1px solid var(--secondary-neon);
+    color: var(--secondary-neon);
+    font-weight: bold;
+    margin-left: 5px;
+    vertical-align: middle; /* Align with surrounding text */
+}
+
+/* Status text paragraphs */
+.status-text {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: var(--tertiary-neon); /* Use lime green for status messages */
+    min-height: 1.2em; /* Prevent layout shifts when text appears/disappears */
+}
+
+/* Coordinate display below map */
+.coords-display {
+     color: var(--tertiary-neon);
+     font-size: 0.9em;
+     margin-top: 5px; /* Space above coords */
+     min-height: 1.2em; /* Prevent layout shift */
+     text-align: center;
+}
+
+/* Custom Symbols List */
+#custom-symbols-list-container {
+    margin-bottom: 10px;
+}
+#custom-symbols-list {
+    list-style: none; /* Remove default bullet points */
+    padding-left: 5px;
+    max-height: 100px; /* Limit height */
+    overflow-y: auto; /* Add scrollbar if needed */
+    border: 1px solid var(--border-color);
+    padding: 5px;
+    margin-top: 5px;
+}
+#custom-symbols-list li {
+    padding: 2px 5px;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+}
+#custom-symbols-list li:hover {
+    background-color: var(--hover-bg);
+    cursor: pointer;
+}
+
+/* Custom Symbol Edit Area */
+.symbol-edit-area {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+}
+.symbol-edit-area label {
+    margin-right: 2px;
+}
+.symbol-edit-area input[type="text"] {
+    padding: 4px 6px; /* Smaller padding */
+}
+.symbol-edit-area button {
+    padding: 4px 8px; /* Smaller padding */
+    margin: 0 2px; /* Adjust margin */
+}
+
+/* NEW: Legend I/O Actions Container */
+.legend-io-actions {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px; /* Space between buttons */
+    justify-content: space-around; /* Distribute buttons */
+}
+.legend-io-actions button {
+    padding: 6px 10px; /* Slightly smaller buttons */
+    flex-basis: calc(50% - 10px); /* Roughly two buttons per line */
+    text-align: center;
+}
+
+
+/* Styles for SYSTEM I/O section inputs */
+.file-controls .form-field {
+    margin-bottom: 10px; /* Space between label/input pairs */
+}
+
+.file-controls label {
+    display: block; /* Labels on their own line */
+    margin-bottom: 3px;
+    color: var(--primary-neon);
+    font-size: 0.9em;
+}
+
+.file-controls input[type="text"],
+.file-controls textarea {
+    width: 100%; /* Make inputs fill the section width */
+    /* Inherits base input styles, no need to repeat all */
+}
+
+.file-controls textarea {
+    min-height: 40px; /* Minimum height for description textarea */
+}
+
+/* Optional divider style in I/O section */
+.io-divider {
+    border: none;
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 15px 0; /* Space around the divider */
+}
+
+/* Container for import/export buttons */
+.io-actions {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping */
+    align-items: center; /* Vertically align items */
+    gap: 10px; /* Space between items */
+}
+
+.io-actions label {
+    margin-bottom: 0; /* Remove bottom margin for inline label */
+    display: inline-block; /* Allow label next to input */
+    flex-shrink: 0; /* Prevent label from shrinking too much */
+    margin-right: 5px;
+}
+
+.io-actions input[type="file"] {
+    flex-grow: 1; /* Allow file input to take available space */
+    min-width: 100px; /* Ensure file input doesn't get too small */
+}
+.io-actions button {
+    flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+
+/* --- Modal Styles --- */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 100; /* Sit on top of other content */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Enable scroll if modal content is too long */
+    background-color: rgba(0, 0, 0, 0.7); /* Dim background */
+    backdrop-filter: blur(5px); /* Optional blur effect */
+}
+
+.modal-content {
+    background-color: var(--bg-color);
+    margin: 10% auto; /* Center vertically (approx) and horizontally */
+    padding: 25px;
+    border: 1px solid var(--primary-neon);
+    width: 80%; /* Responsive width */
+    max-width: 500px; /* Max width for larger screens */
+    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3); /* Neon shadow */
+    color: var(--text-color);
+    font-family: var(--font-body);
+    position: relative; /* Needed for absolute positioning of close button */
+}
+
+.modal-content h2 { /* Modal title */
+    color: var(--secondary-neon);
+    text-shadow: 0 0 5px var(--secondary-neon);
+    border-bottom-color: var(--secondary-neon);
+    margin-top: 0; /* Remove default top margin */
+    margin-bottom: 20px;
+    padding-right: 30px; /* Space for close button */
+}
+
+/* Modal close button (X) */
+.close-button {
+    color: #aaa;
+    position: absolute; /* Position relative to modal-content */
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: var(--primary-neon); /* Highlight on hover/focus */
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Form fields within the modal */
+.modal .form-field {
+    margin-bottom: 15px;
+}
+
+.modal label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--primary-neon);
+    font-size: 0.9em;
+}
+
+.modal input[type="text"],
+.modal textarea {
+    width: 100%; /* Full width within modal */
+    /* Inherits base input styles */
+}
+
+/* Action buttons area at the bottom of the modal */
+.modal .form-actions {
+    margin-top: 20px;
+    text-align: right; /* Align buttons to the right */
+    display: flex; /* Use flexbox for alignment */
+    justify-content: flex-end; /* Align buttons to the right */
+    align-items: center; /* Align items vertically */
+    flex-wrap: wrap; /* Allow wrapping */
+    gap: 10px; /* Space between elements */
+}
+.modal .form-actions button {
+     margin-left: 0; /* Remove default margin */
+     flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+/* Status text specific to the modal */
+.modal .status-text {
+    text-align: left;
+    margin: 0; /* Remove default margin */
+    flex-grow: 1; /* Allow status to take remaining space */
+    /* Inherits base status-text styles */
+}
+
+
+/* --- Scrollbar Styles (Optional, Webkit browsers) --- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-color); /* Match background */
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--border-neon); /* Use neon color for thumb */
+  border-radius: 4px;
+  border: 1px solid var(--bg-color); /* Border matching track background */
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--secondary-neon); /* Change color on hover */
+}
